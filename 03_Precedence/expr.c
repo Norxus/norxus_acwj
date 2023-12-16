@@ -50,6 +50,14 @@ static int op_precedence(int tokentype){
     return (prec);
 }
 
+/*
+
+ * 2*3 + 4*5
+      +
+    /   \
+   *     *
+ 2   3  4  5
+ */
 // 返回一个语法树，其根节点为二进制操作符。
 // 参数ptp是指前一个token的优先级
 // 递归时，每层至少解析一个整数+该整数后面的符号（包括EOF）
@@ -71,6 +79,8 @@ struct  ASTnode *binexpr(int ptp){
     // 因为上面调用了primary()函数，因此这里是操作符
     // 优先级更高进入递归
     // AST结构上下层之间代表着计算的先后顺序，同层级的左右关系代表着从左到右顺序计算
+    // 如果优先级小于那么直接返回，然后将整体作为一个左子树节点
+    // 记住，每次循环时，Token指针会一直向后遍历，因为它是全局变量！
     while(op_precedence(tokentype) > ptp){
         // 移动token指针
         scan(&Token);
