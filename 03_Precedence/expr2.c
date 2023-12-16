@@ -78,6 +78,17 @@ struct ASTnode *multiplicative_expr(void){
     return (left);
 }
 
+/*
+ * 2*3 + 4*5
+      +
+    /   \
+   *     *
+ 2   3  4  5
+ */
+// 实际上对于additive_expr来说，乘除运算块实际上是一个整体，和普通的数字没有太多区别
+// 都是作为AST的节点而存在的。在它眼中根本就没有乘除运算（乘除运算+常量是一个整体，是一个计算结果），只有加减运算
+// 实际上代码中，是将常量也看作multiplicative_expr函数的一种返回结果。
+// 整体上，这个构建思路就是不停的构建加减AST节点，如果后续还有运算，将其作为新的加减AST的左节点
 struct ASTnode *additive_expr(void){
     struct ASTnode *left, *right;
     int tokentype;
@@ -94,7 +105,7 @@ struct ASTnode *additive_expr(void){
         return (left);
     }
 
-    // 乘除已经处理完了,直接开始循环遍历处理加减
+    // 递归构建AST
     while (1){
         // 获取下一个整形数据
         scan(&Token);
